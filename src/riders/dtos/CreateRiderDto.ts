@@ -35,5 +35,5 @@ export class CreateRiderDto {
 
   @IsNumber()
   @IsOptional()
-  longtitude: number;
+  longitude: number;
 }

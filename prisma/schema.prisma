@@ -28,7 +28,7 @@ model Rider {
 model RiderPosition {
   id Int @default(autoincrement()) @id
   latitude Float
-  longtitude Float
+  longitude Float
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 

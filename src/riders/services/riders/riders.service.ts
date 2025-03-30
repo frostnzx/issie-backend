@@ -20,34 +20,62 @@ export class RidersService {
   createRider(
     data: Prisma.RiderCreateInput,
     latitude: number,
-    longtitude: number,
+    longitude: number,
   ) {
     return this.prisma.rider.create({
       data: {
         ...data,
-        riderPosition: (latitude !== undefined && longtitude !== undefined) ? {
-            create: {
-                latitude , 
-                longtitude,
-            },
-        } : undefined
+        riderPosition:
+          latitude !== undefined && longitude !== undefined
+            ? {
+                create: {
+                  latitude,
+                  longitude,
+                },
+              }
+            : undefined,
       },
     });
   }
-  async updateRiderById(id: number , data: Prisma.RiderUpdateInput) {
+  async updateRiderById(id: number, data: Prisma.RiderUpdateInput) {
     const findRider = await this.getRiderById(id);
-    if(!findRider) {
-        throw new HttpException('Rider Not Found' , 404);
+    if (!findRider) {
+      throw new HttpException('Rider Not Found', 404);
     }
-    return await this.prisma.rider.update({where : {id} , data});
+    return await this.prisma.rider.update({ where: { id }, data: {...data , updatedAt: new Date()} });
   }
   async deleteRiderById(id: number) {
     const findRider = await this.getRiderById(id);
     if (!findRider) {
-        throw new HttpException('Rider not found', 404);
-    } 
+      throw new HttpException('Rider not found', 404);
+    }
     // delete riderPosition first
-    await this.prisma.riderPosition.delete({where: {id : findRider.riderPosition?.id}});
+    if (findRider.riderPosition) {
+      await this.prisma.riderPosition.delete({
+        where: { id: findRider.riderPosition?.id },
+      });
+    }
     return this.prisma.rider.delete({ where: { id } });
+  }
+  async createLocationByRiderId(
+    id: number,
+    data: Prisma.RiderPositionCreateWithoutRiderInput,
+  ) {
+    const findRider = await this.getRiderById(id);
+    if (!findRider) {
+      throw new HttpException('Rider not found', 404);
+    }
+    return this.prisma.rider.update({
+      where: { id },
+      data: {
+        riderPosition: {
+          create: {
+            latitude: data.latitude,
+            longitude: data.longitude,
+          },
+        },
+      },
+      select: { riderPosition: true}
+    });
   }
 }

@@ -13,6 +13,7 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
+import { ApiOperation } from '@nestjs/swagger';
 import { CreateLocationDto } from 'src/riders/dtos/CreateLocationDto';
 import { CreateRiderDto } from 'src/riders/dtos/CreateRiderDto';
 import { UpdateRiderDto } from 'src/riders/dtos/UpdateRiderDto';
@@ -23,19 +24,22 @@ export class RidersController {
   constructor(private riderService: RidersService) {}
 
   // GET /riders
+  @ApiOperation({ summary: 'Retrive every rider info' })
   @Get()
   getRiders() {
     return this.riderService.getRiders();
   }
   // GET /riders/search?latitude{latitude}&longitude={longitude}
+  @ApiOperation({ summary: 'Used to search for nearby rider (within 5km)' })
   @Get('search')
   getNearbyRider(
-    @Query('latitude' , ParseFloatPipe) latitude: number,
-    @Query('longitude' , ParseFloatPipe) longitude: number,
+    @Query('latitude', ParseFloatPipe) latitude: number,
+    @Query('longitude', ParseFloatPipe) longitude: number,
   ) {
     return this.riderService.getNearbyRider(latitude, longitude);
   }
   // GET /riders/:id
+  @ApiOperation({ summary: 'Used to retrive rider info by specified id' })
   @Get(':id')
   async getRiderById(@Param('id', ParseIntPipe) id: number) {
     const rider = await this.riderService.getRiderById(id);
@@ -45,6 +49,7 @@ export class RidersController {
     return rider;
   }
   // POST /riders
+  @ApiOperation({ summary: 'Used to create new rider' })
   @Post()
   @UsePipes(ValidationPipe)
   createRider(@Body() createRiderDto: CreateRiderDto) {
@@ -52,6 +57,7 @@ export class RidersController {
     return this.riderService.createRider(riderInfo, latitude, longitude);
   }
   // PATCH /riders/:id
+  @ApiOperation({ summary: 'Used to update already existed rider by id' })
   @Patch(':id')
   @UsePipes(ValidationPipe)
   updateRiderById(
@@ -61,12 +67,16 @@ export class RidersController {
     return this.riderService.updateRiderById(id, updateRiderDto);
   }
   // DELETE /riders/:id
+  @ApiOperation({ summary: 'Used to delete rider by id' })
   @Delete(':id')
   @UsePipes(ValidationPipe)
   deleteRiderById(@Param('id', ParseIntPipe) id: number) {
     return this.riderService.deleteRiderById(id);
   }
   // GET /riders/:riderId/locations
+  @ApiOperation({
+    summary: 'Used to get location information of certain rider from id',
+  })
   @Get(':riderId/locations')
   async getLocationByRiderId(@Param('riderId', ParseIntPipe) riderId: number) {
     const rider = await this.riderService.getRiderById(riderId);
@@ -79,6 +89,10 @@ export class RidersController {
     return await rider.riderPosition;
   }
   // POST /riders/:riderId/locations
+  @ApiOperation({
+    summary:
+      'Used to get create location information for already existed rider by id',
+  })
   @Post(':riderId/locations')
   @UsePipes(ValidationPipe)
   async createLocationByRiderId(

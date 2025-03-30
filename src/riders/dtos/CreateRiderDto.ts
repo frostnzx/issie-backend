@@ -30,10 +30,10 @@ export class CreateRiderDto {
 
   // must have position too innit?
   @IsNumber()
-  @IsNotEmpty()
+  @IsOptional()
   latitude: number;
 
   @IsNumber()
-  @IsNotEmpty()
+  @IsOptional()
   longtitude: number;
 }

@@ -25,29 +25,19 @@ export class RidersService {
     return this.prisma.rider.create({
       data: {
         ...data,
-        riderPosition: {
-          create: {
-            latitude,
-            longtitude,
-          },
-        },
+        riderPosition: (latitude !== undefined && longtitude !== undefined) ? {
+            create: {
+                latitude , 
+                longtitude,
+            },
+        } : undefined
       },
     });
   }
-  async updateRiderById(id: number , data: Prisma.RiderUpdateInput , latitude?:number , longtitude?:number) {
+  async updateRiderById(id: number , data: Prisma.RiderUpdateInput) {
     const findRider = await this.getRiderById(id);
     if(!findRider) {
         throw new HttpException('Rider Not Found' , 404);
-    }
-    // update latitude & longtitude first
-    if((latitude !== undefined || longtitude !== undefined ) && findRider.riderPosition) {
-        await this.prisma.riderPosition.update({
-            where: {id : findRider.riderPosition.id},
-            data: {
-                latitude: latitude ?? findRider.riderPosition.latitude,
-                longtitude: longtitude ?? findRider.riderPosition.longtitude,
-            }
-        })
     }
     return await this.prisma.rider.update({where : {id} , data});
   }

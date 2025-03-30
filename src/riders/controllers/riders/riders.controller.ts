@@ -32,8 +32,7 @@ export class RidersController {
     @Patch(':id')
     @UsePipes(ValidationPipe)
     updateRiderById(@Body() updateRiderDto: UpdateRiderDto , @Param('id' , ParseIntPipe) id:number) {
-        const {latitude , longtitude , ...updateRiderInfo} = updateRiderDto;
-        return this.riderService.updateRiderById(id , updateRiderInfo , latitude , longtitude);
+        return this.riderService.updateRiderById(id , updateRiderDto);
     }
     // DELETE /riders/:id
     @Delete(':id')
@@ -41,4 +40,6 @@ export class RidersController {
     deleteRiderById(@Param('id' , ParseIntPipe) id:number) {
         return this.riderService.deleteRiderById(id);
     }
+    // GET /riders/:riderId/locations
+    // POST /riders/:riderId/locations
 }

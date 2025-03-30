@@ -27,12 +27,4 @@ export class UpdateRiderDto {
   @IsPhoneNumber()
   @IsOptional()
   phoneNumber: string;
-
-  @IsNumber()
-  @IsOptional()
-  latitude: number;
-
-  @IsNumber()
-  @IsOptional()
-  longtitude: number;
 }

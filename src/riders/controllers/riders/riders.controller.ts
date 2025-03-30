@@ -27,6 +27,14 @@ export class RidersController {
   getRiders() {
     return this.riderService.getRiders();
   }
+  // GET /riders/search?latitude{latitude}&longitude={longitude}
+  @Get('search')
+  getNearbyRider(
+    @Query('latitude' , ParseFloatPipe) latitude: number,
+    @Query('longitude' , ParseFloatPipe) longitude: number,
+  ) {
+    return this.riderService.getNearbyRider(latitude, longitude);
+  }
   // GET /riders/:id
   @Get(':id')
   async getRiderById(@Param('id', ParseIntPipe) id: number) {
@@ -81,14 +89,5 @@ export class RidersController {
       riderId,
       createLocationDto,
     );
-  }
-  // GET /riders/search?latitude{latitude}&longitude={longitude}
-  @Get('search')
-  getNearbyRider(
-    @Query('latitude' , ParseIntPipe) latitude: number,
-    @Query('longitude' , ParseIntPipe) longitude: number,
-  ) {
-    console.log('latitude : ' + latitude);
-    console.log('longitude : ' + longitude);
   }
 }

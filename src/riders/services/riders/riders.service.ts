@@ -1,6 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { distance } from 'src/utils/distance';
 
 @Injectable()
 export class RidersService {
@@ -16,6 +17,19 @@ export class RidersService {
         riderPosition: true,
       },
     });
+  }
+  async getNearbyRider(latitude: number, longitude: number) {
+    const riders = await this.getRiders();
+    return riders.filter(
+      (rider) =>
+        rider.riderPosition &&
+        distance(
+          latitude,
+          longitude,
+          rider.riderPosition.latitude,
+          rider.riderPosition.longitude,
+        ) <= 5,
+    );
   }
   createRider(
     data: Prisma.RiderCreateInput,
@@ -42,7 +56,10 @@ export class RidersService {
     if (!findRider) {
       throw new HttpException('Rider Not Found', 404);
     }
-    return await this.prisma.rider.update({ where: { id }, data: {...data , updatedAt: new Date()} });
+    return await this.prisma.rider.update({
+      where: { id },
+      data: { ...data, updatedAt: new Date() },
+    });
   }
   async deleteRiderById(id: number) {
     const findRider = await this.getRiderById(id);
@@ -75,7 +92,7 @@ export class RidersService {
           },
         },
       },
-      select: { riderPosition: true}
+      select: { riderPosition: true },
     });
   }
 }
